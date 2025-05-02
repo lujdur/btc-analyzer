@@ -4,12 +4,34 @@
 # Then run: streamlit run btc_analyzer.py
 
 import pandas as pd
+import datetime
 
 try:
     import streamlit as st
+    import requests
+    import plotly.graph_objs as go
     STREAMLIT_AVAILABLE = True
 except ModuleNotFoundError:
     STREAMLIT_AVAILABLE = False
+
+
+def fetch_btc_dominance():
+    try:
+        url = "https://api.coingecko.com/api/v3/global"
+        response = requests.get(url)
+        data = response.json()
+        return data['data']['market_cap_percentage']['btc']
+    except:
+        return None
+
+
+def fetch_macro_data():
+    # Simulated macro data (replace with real APIs later)
+    return {
+        "Fed Rate": "5.25%",
+        "CPI YoY": "3.2%",
+        "Macro Risk Level": "Moderate"
+    }
 
 if STREAMLIT_AVAILABLE:
     st.set_page_config(page_title="BTC Portfolio Analyzer", layout="centered")
@@ -19,6 +41,8 @@ if STREAMLIT_AVAILABLE:
     Upload your portfolio CSV and receive:
     - 📊 % BTC exposure
     - ⚠️ Altcoin & risk analysis
+    - 📈 BTC Dominance trend
+    - 🌍 Macroeconomic overview
     - 🧠 Suggestions for improving Bitcoin stacking
 
     **CSV format expected:**
@@ -60,5 +84,25 @@ if STREAMLIT_AVAILABLE:
             st.success("Strong BTC position. You're well positioned for long-term stacking.")
         else:
             st.info("Balanced exposure. Monitor BTC dominance and macro conditions for adjustments.")
+
+        # BTC Dominance
+        st.subheader("📈 BTC Dominance")
+        btc_dominance = fetch_btc_dominance()
+        if btc_dominance:
+            st.markdown(f"**Current BTC Dominance:** {btc_dominance:.2f}%")
+            if btc_dominance > 50 and altcoin_exposure > 30:
+                st.warning("High BTC dominance + high altcoin exposure. Consider rotating into BTC.")
+            elif btc_dominance < 45 and btc_exposure > 70:
+                st.info("Low BTC dominance. May be early alt season. Watch ETH and majors.")
+        else:
+            st.error("Unable to fetch BTC dominance data.")
+
+        # Macro Overview
+        st.subheader("🌍 Macroeconomic Snapshot")
+        macro_data = fetch_macro_data()
+        st.markdown(f"**Fed Rate:** {macro_data['Fed Rate']}")
+        st.markdown(f"**CPI YoY:** {macro_data['CPI YoY']}")
+        st.markdown(f"**Macro Risk Level:** {macro_data['Macro Risk Level']}")
+
 else:
     print("Streamlit is not installed in this environment. To run the app, install Streamlit with 'pip install streamlit' and run this script using 'streamlit run btc_analyzer.py'.")
