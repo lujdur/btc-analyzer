@@ -35,15 +35,15 @@ def fetch_macro_data():
 
 if STREAMLIT_AVAILABLE:
     st.set_page_config(page_title="BTC Portfolio Analyzer", layout="centered")
-    st.title("📂 Crypto Portfolio Analyzer for BTC Stacking")
+    st.title("\U0001F4C2 Crypto Portfolio Analyzer for BTC Stacking")
 
     st.markdown("""
     Upload your portfolio CSV and receive:
-    - 📊 % BTC exposure
-    - ⚠️ Altcoin & risk analysis
-    - 📈 BTC Dominance trend
-    - 🌍 Macroeconomic overview
-    - 🧠 Suggestions for improving Bitcoin stacking
+    - \U0001F4CA % BTC exposure
+    - \u26A0\uFE0F Altcoin & risk analysis
+    - \U0001F4C8 BTC Dominance trend
+    - \U0001F30D Macroeconomic overview
+    - \U0001F9E0 Suggestions for improving Bitcoin stacking
 
     **CSV format expected:**
     ```csv
@@ -56,6 +56,9 @@ if STREAMLIT_AVAILABLE:
 
     uploaded_file = st.file_uploader("Upload your portfolio CSV", type=["csv"])
 
+    if uploaded_file is None:
+        st.info("\U0001F447 Please upload a valid CSV file to begin.")
+
     if uploaded_file is not None:
         try:
             df = pd.read_csv(uploaded_file)
@@ -67,42 +70,47 @@ if STREAMLIT_AVAILABLE:
 
             risky_tokens = df[df['Value (USD)'] < 1000][['Token', 'Symbol', 'Value (USD)']]
 
-            st.subheader("🔍 Portfolio Overview")
+            st.subheader("\U0001F50D Portfolio Overview")
             st.dataframe(df)
 
-            st.markdown(f"**💰 Total Portfolio Value:** ${total_value:,.2f}")
+            st.markdown(f"**\U0001F4B0 Total Portfolio Value:** ${total_value:,.2f}")
             st.markdown(f"**✅ BTC Exposure:** {btc_exposure:.2f}%")
+            st.markdown(f"**\u26A0\uFE0F Altcoin Exposure:** {altcoin_exposure:.2f}%")
 
-        if not risky_tokens.empty:
-            st.subheader("🚩 Risk Flag — Small or Volatile Positions")
-            st.dataframe(risky_tokens)
+            if not risky_tokens.empty:
+                st.subheader("\U0001F6A9 Risk Flag — Small or Volatile Positions")
+                st.dataframe(risky_tokens)
 
-        st.subheader("🧠 BTC Stacking Insight")
-        if btc_exposure < 50:
-            st.warning("Your BTC exposure is low. Consider reallocating from alts to stack more BTC.")
-        elif btc_exposure > 75:
-            st.success("Strong BTC position. You're well positioned for long-term stacking.")
-        else:
-            st.info("Balanced exposure. Monitor BTC dominance and macro conditions for adjustments.")
+            st.subheader("\U0001F9E0 BTC Stacking Insight")
+            if btc_exposure < 50:
+                st.warning("Your BTC exposure is low. Consider reallocating from alts to stack more BTC.")
+            elif btc_exposure > 75:
+                st.success("Strong BTC position. You're well positioned for long-term stacking.")
+            else:
+                st.info("Balanced exposure. Monitor BTC dominance and macro conditions for adjustments.")
 
-        # BTC Dominance
-        st.subheader("📈 BTC Dominance")
-        btc_dominance = fetch_btc_dominance()
-        if btc_dominance:
-            st.markdown(f"**Current BTC Dominance:** {btc_dominance:.2f}%")
-            if btc_dominance > 50 and altcoin_exposure > 30:
-                st.warning("High BTC dominance + high altcoin exposure. Consider rotating into BTC.")
-            elif btc_dominance < 45 and btc_exposure > 70:
-                st.info("Low BTC dominance. May be early alt season. Watch ETH and majors.")
-        else:
-            st.error("Unable to fetch BTC dominance data.")
+            # BTC Dominance
+            st.subheader("\U0001F4C8 BTC Dominance")
+            btc_dominance = fetch_btc_dominance()
+            if btc_dominance:
+                st.markdown(f"**Current BTC Dominance:** {btc_dominance:.2f}%")
+                if btc_dominance > 50 and altcoin_exposure > 30:
+                    st.warning("High BTC dominance + high altcoin exposure. Consider rotating into BTC.")
+                elif btc_dominance < 45 and btc_exposure > 70:
+                    st.info("Low BTC dominance. May be early alt season. Watch ETH and majors.")
+            else:
+                st.error("Unable to fetch BTC dominance data.")
 
-        # Macro Overview
-        st.subheader("🌍 Macroeconomic Snapshot")
-        macro_data = fetch_macro_data()
-        st.markdown(f"**Fed Rate:** {macro_data['Fed Rate']}")
-        st.markdown(f"**CPI YoY:** {macro_data['CPI YoY']}")
-        st.markdown(f"**Macro Risk Level:** {macro_data['Macro Risk Level']}")
+            # Macro Overview
+            st.subheader("\U0001F30D Macroeconomic Snapshot")
+            macro_data = fetch_macro_data()
+            st.markdown(f"**Fed Rate:** {macro_data['Fed Rate']}")
+            st.markdown(f"**CPI YoY:** {macro_data['CPI YoY']}")
+            st.markdown(f"**Macro Risk Level:** {macro_data['Macro Risk Level']}")
+
+        except Exception as e:
+            st.error(f"Error reading CSV: {e}")
+            st.stop()
 
 else:
     print("Streamlit is not installed in this environment. To run the app, install Streamlit with 'pip install streamlit' and run this script using 'streamlit run btc_analyzer.py'.")
