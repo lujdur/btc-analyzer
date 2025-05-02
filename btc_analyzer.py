@@ -47,7 +47,7 @@ if STREAMLIT_AVAILABLE:
 
     **CSV format expected:**
     ```csv
-    Token,Symbol,Quantity,Value(USD)
+    Token,Symbol,Quantity,Value (USD)
     Bitcoin,BTC,0.5,15000
     Ethereum,ETH,1.2,3500
     Solana,SOL,50,3000
@@ -56,22 +56,22 @@ if STREAMLIT_AVAILABLE:
 
     uploaded_file = st.file_uploader("Upload your portfolio CSV", type=["csv"])
 
-    if uploaded_file:
-        df = pd.read_csv(uploaded_file)
-        total_value = df['Value (USD)'].sum()
-        df['Portfolio %'] = (df['Value (USD)'] / total_value * 100).round(2)
+    if uploaded_file is not None:
+        try:
+            df = pd.read_csv(uploaded_file)
+            total_value = df['Value (USD)'].sum()
+            df['Portfolio %'] = (df['Value (USD)'] / total_value * 100).round(2)
 
-        btc_exposure = df.loc[df['Symbol'].str.upper() == 'BTC', 'Portfolio %'].sum()
-        altcoin_exposure = 100 - btc_exposure
+            btc_exposure = df.loc[df['Symbol'].str.upper() == 'BTC', 'Portfolio %'].sum()
+            altcoin_exposure = 100 - btc_exposure
 
-        risky_tokens = df[df['Value (USD)'] < 1000][['Token', 'Symbol', 'Value (USD)']]
+            risky_tokens = df[df['Value (USD)'] < 1000][['Token', 'Symbol', 'Value (USD)']]
 
-        st.subheader("🔍 Portfolio Overview")
-        st.dataframe(df)
+            st.subheader("🔍 Portfolio Overview")
+            st.dataframe(df)
 
-        st.markdown(f"**💰 Total Portfolio Value:** ${total_value:,.2f}")
-        st.markdown(f"**✅ BTC Exposure:** {btc_exposure:.2f}%")
-        st.markdown(f"**⚠️ Altcoin Exposure:** {altcoin_exposure:.2f}%")
+            st.markdown(f"**💰 Total Portfolio Value:** ${total_value:,.2f}")
+            st.markdown(f"**✅ BTC Exposure:** {btc_exposure:.2f}%")
 
         if not risky_tokens.empty:
             st.subheader("🚩 Risk Flag — Small or Volatile Positions")
