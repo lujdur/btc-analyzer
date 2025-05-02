@@ -47,7 +47,7 @@ if STREAMLIT_AVAILABLE:
 
     **CSV format expected:**
     ```csv
-    Token,Symbol,Quantity,Value (USD)
+    Token,Symbol,Quantity,Value(USD)
     Bitcoin,BTC,0.5,15000
     Ethereum,ETH,1.2,3500
     Solana,SOL,50,3000
